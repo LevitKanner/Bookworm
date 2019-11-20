@@ -9,18 +9,27 @@
 import SwiftUI
 
 struct ContentView: View {
-    @FetchRequest(entity: Book.entity(), sortDescriptors: <#T##[NSSortDescriptor]#>) var books: FetchedResults<Book>
+    @Environment(\.managedObjectContext) var moc
+    @FetchRequest(entity: Book.entity(), sortDescriptors: []) var books: FetchedResults<Book>
+    @State private var showingForm = false
     
     var body: some View {
-        Text("Hello World!")
-
+        NavigationView{
+           Text("\(self.books.count)")
             
-        .navigationBarItems(leading: Button(action:{
+            .navigationBarTitle("BookWorm")
+            .navigationBarItems(trailing: Button(action:{
+                self.showingForm.toggle()
+            }){
+                Image(systemName: "plus")
+            })
+            .sheet(isPresented: $showingForm) {
+                AddBookView().environment(\.managedObjectContext, self.moc)
+            }
             
-        }){
-            Image(systemName: "plus")
-        })
-        .disabled(<#T##disabled: Bool##Bool#>)
+        }
+        
+        
     }
 }
 
