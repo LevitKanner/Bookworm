@@ -10,6 +10,7 @@ import SwiftUI
 
 struct AddBookView: View {
     @Environment(\.managedObjectContext) var moc
+    @Environment(\.presentationMode) var presentationMode
     @State private var title = ""
     @State private var author = ""
     @State private var genre = ""
@@ -19,50 +20,58 @@ struct AddBookView: View {
     let genres = ["Fantasy", "Horror", "Kids", "Mystery", "Poetry", "Romance", "Thriller"]
     
     var body: some View {
-        Form{
-            //First section
-            Section{
-                TextField("Book title", text: $title)
-                TextField("Author" , text: $author)
-                Picker(selection: $genre, label: Text("Genre")) {
-                    ForEach(0..<self.genres.count){
-                        Text(self.genres[$0])
+        NavigationView{
+            Form{
+                //First section
+                Section{
+                    TextField("Book title", text: $title)
+                    TextField("Author" , text: $author)
+                    Picker(selection: $genre, label: Text("Genre")) {
+                        ForEach(self.genres , id: \.self){
+                            Text($0)
+                        }
+                    }
+                }
+                
+                //Second section
+                Section(header: Text("Genre")){
+                    Picker("Rating", selection: $rating) {
+                        ForEach(0..<6){
+                            Text("\($0)")
+                        }
+                    }
+                    TextField("Write a review", text: $review)
+                }
+                
+                //Third Section
+                Section{
+                    Button(action: {
+                        self.saveBook {
+                            self.presentationMode.wrappedValue.dismiss()
+                        }
+                    }){
+                        Text("Save")
                     }
                 }
             }
-            
-            //Second section
-            Section(header: Text("Genre")){
-                Picker("Rating", selection: $rating) {
-                    ForEach(0..<6){
-                        Text("\($0)")
-                    }
-                }
-                TextField("Write a review", text: $review)
-            }
-            
-            Section{
-                Button(action: {
-                    //Add button action
-                }){
-                    Text("Save")
-                }
-            }
+            .navigationBarTitle("Add Book" , displayMode: .inline)
         }
-        .navigationBarTitle("Add Book" , displayMode: .inline)
     }
-    func saveBook(){
-        let book = Book(context: self.moc)
-        
-        book.title = self.title
-        book.author = self.author
-        book.genre = self.genre
-        book.rating = Int16(self.rating)
-        book.review = self.review
-        
-        try? self.moc.save()
+        //Save book method
+        func saveBook(dismiss: () -> Void){
+            let book = Book(context: self.moc)
+            
+            book.title = self.title
+            book.author = self.author
+            book.genre = self.genre
+            book.rating = Int16(self.rating)
+            book.review = self.review
+            
+            try? self.moc.save()
+            dismiss()
+        }
     }
-}
+
 
 struct AddBookView_Previews: PreviewProvider {
     static var previews: some View {
