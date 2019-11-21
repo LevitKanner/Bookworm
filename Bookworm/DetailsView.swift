@@ -10,6 +10,10 @@ import SwiftUI
 import CoreData
 
 struct DetailsView: View {
+    @Environment(\.managedObjectContext) var moc
+    @Environment(\.presentationMode) var presentationMode
+    @State private var showingAlert = false
+    
     var book: Book
     
     var body: some View {
@@ -56,9 +60,34 @@ struct DetailsView: View {
                     
                 }
             }
+            
+            /*
+             Adds an alert which allows a user to make a choice whether to delete the current book or cancel action
+             */
+        .alert(isPresented: $showingAlert, content: { () -> Alert in
+            Alert(title: Text("Delete Book"), message: Text("Are you sure?"), primaryButton: .destructive(Text("delete")){
+                self.deleteBook {
+                    self.presentationMode.wrappedValue.dismiss()
+                }
+                }, secondaryButton: .cancel())
+        })
+            
         .navigationBarTitle(Text(self.book.title?.uppercased() ?? "Unknown book"), displayMode: .inline)
+            
+            //Trailing navigation Item that triggers the deletion of a book
+            .navigationBarItems(trailing: Button(action:{
+                self.showingAlert = true
+            }){
+                Image(systemName: "trash")
+            })
         }
+    
+    //Deletes the current book
+    func deleteBook(dismiss: ()-> Void){
+        self.moc.delete(book)
+        dismiss()
     }
+}
 
 
 struct DetailsView_Previews: PreviewProvider {
