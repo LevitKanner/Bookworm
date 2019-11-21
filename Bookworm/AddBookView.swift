@@ -51,6 +51,11 @@ struct AddBookView: View {
                 }
             }
             .navigationBarTitle("Add Book" , displayMode: .inline)
+            .navigationBarItems(trailing: Button(action:{
+                self.presentationMode.wrappedValue.dismiss()
+            }){
+                Text("cancel")
+            })
         }
     }
         //Save book method
