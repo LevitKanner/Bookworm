@@ -25,7 +25,7 @@ struct RatingView: View {
             
             ForEach(1..<maximumRating + 1){ number in
                 self.image(for: number)
-                    .foregroundColor(number > self.maximumRating ? self.offColor : self.onColor)
+                    .foregroundColor(number > self.rating ? self.offColor : self.onColor)
                     .onTapGesture {
                         self.rating = number 
                 }
