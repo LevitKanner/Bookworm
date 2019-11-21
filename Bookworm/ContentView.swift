@@ -10,8 +10,11 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) var moc
+    
     @FetchRequest(entity: Book.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Book.title, ascending: true) , NSSortDescriptor(keyPath: \Book.author, ascending: true)]) var books: FetchedResults<Book>
+    
     @State private var showingForm = false
+    
     
     var body: some View {
         NavigationView{
@@ -21,7 +24,9 @@ struct ContentView: View {
                 
                         VStack(alignment: .leading){
                             Text(book.title ?? "Unknown Title")
+                                .foregroundColor(book.rating == 1 ? Color.red : Color.black)
                                 .font(.headline)
+                            
                             Text(book.author ?? "Unknown Author")
                                 .font(.system(size: 12))
                         }
@@ -53,7 +58,6 @@ struct ContentView: View {
     }
 
     func deleteBook(at offsets: IndexSet){
-        
         for offset in offsets{
             let book = books[offset]
             
