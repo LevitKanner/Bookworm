@@ -17,6 +17,11 @@ struct AddBookView: View {
     @State private var rating = 3
     @State private var review = ""
     
+    var formActive: Bool{
+        let genre = self.genre.trimmingCharacters(in: .whitespacesAndNewlines)
+        return genre.isEmpty
+    }
+    
     let genres = ["Fantasy", "Horror", "Kids", "Mystery", "Poetry", "Romance", "Thriller"]
     
     var body: some View {
@@ -34,7 +39,7 @@ struct AddBookView: View {
                 }
                 
                 //Second section
-                Section(header: Text("Genre")){
+                Section(header: Text("Rating")){
                     RatingView(rating: $rating)
                     TextField("Write a review", text: $review)
                 }
@@ -49,6 +54,7 @@ struct AddBookView: View {
                         Text("Save")
                     }
                 }
+                .disabled(self.formActive)
             }
             .navigationBarTitle("Add Book" , displayMode: .inline)
             .navigationBarItems(trailing: Button(action:{
