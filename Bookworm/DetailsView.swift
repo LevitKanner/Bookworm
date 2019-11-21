@@ -16,6 +16,13 @@ struct DetailsView: View {
     
     var book: Book
     
+    var date: String {
+           let dateFormatter = DateFormatter()
+           dateFormatter.dateStyle = .medium
+           let date = dateFormatter.string(from: self.book.date ?? Date() )
+           return date
+       }
+    
     var body: some View {
         GeometryReader{ geometry in
             ScrollView{
@@ -24,6 +31,9 @@ struct DetailsView: View {
                         Image(self.book.genre ?? "Fantasy")
                             .frame(maxWidth: geometry.size.width)
                         
+                        Text(self.date)
+                            .offset(x: 150, y: -90)
+                            .foregroundColor(.white)
                         
                         Text(self.book.genre?.uppercased() ?? "FANTASY")
                             .font(.caption)
