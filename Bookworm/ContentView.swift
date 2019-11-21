@@ -10,20 +10,35 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) var moc
-    @FetchRequest(entity: Book.entity(), sortDescriptors: []) var books: FetchedResults<Book>
+    @FetchRequest(entity: Book.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Book.title, ascending: true) , NSSortDescriptor(keyPath: \Book.author, ascending: true)]) var books: FetchedResults<Book>
     @State private var showingForm = false
     
     var body: some View {
         NavigationView{
             List{
-                ForEach(books , id: \.id){book in
-                    Text(book.title ?? "Unknown")
+                ForEach(books , id: \.self){ book in
+                    NavigationLink(destination: DetailsView(book: book)) {
+                
+                        VStack(alignment: .leading){
+                            Text(book.title ?? "Unknown Title")
+                                .font(.headline)
+                            Text(book.author ?? "Unknown Author")
+                                .font(.system(size: 12))
+                        }
+                        
+                        Spacer()
+                        
+                        EmojiRating_(rating: book.rating)
+                        .font(.largeTitle)
+                    }
                 }
-                Text("\(self.books.count)")
+                .onDelete { (IndexSet) in
+                    self.deleteBook(at: IndexSet)
+                }
             }
             
             .navigationBarTitle("BookWorm")
-            .navigationBarItems(trailing: Button(action:{
+            .navigationBarItems(leading: EditButton(), trailing: Button(action:{
                 self.showingForm.toggle()
             }){
                 Image(systemName: "plus")
@@ -34,6 +49,19 @@ struct ContentView: View {
             
         }
         
+        
+    }
+
+    func deleteBook(at offsets: IndexSet){
+        
+        for offset in offsets{
+            let book = books[offset]
+            
+            moc.delete(book)
+        }
+        
+        //Writes the changes done by the delete action
+        try? moc.save()
         
     }
 }
