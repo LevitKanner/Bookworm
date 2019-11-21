@@ -15,7 +15,12 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView{
-           Text("\(self.books.count)")
+            List{
+                ForEach(books , id: \.id){book in
+                    Text(book.title ?? "Unknown")
+                }
+                Text("\(self.books.count)")
+            }
             
             .navigationBarTitle("BookWorm")
             .navigationBarItems(trailing: Button(action:{
